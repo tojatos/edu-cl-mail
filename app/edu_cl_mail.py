@@ -1,8 +1,11 @@
 import requests
-import pprint
 from bs4 import BeautifulSoup
 
 def get_all_mails(login, password):
+    return get_mails(login, password, -1)
+
+def get_mails(login, password, max_mails):
+    '''-1 in max_mails means infinity'''
     base_url = 'https://edukacja.pwr.wroc.pl/EdukacjaWeb/studia.do'
     inbox_url = 'https://edukacja.pwr.wroc.pl/EdukacjaWeb/zawartoscSkrzynkiPocztowej.do'
 
@@ -71,5 +74,7 @@ def get_all_mails(login, password):
 
         return messages_datas
 
+    max_index = min(last_page_num * 5, max_mails)
+
     flatten = lambda t: [item for sublist in t for item in sublist]
-    return flatten([get_five_mails(i) for i in range(0, last_page_num * 5, 5)])
+    return flatten([get_five_mails(i) for i in range(0, max_index, 5)])[:max_mails]
