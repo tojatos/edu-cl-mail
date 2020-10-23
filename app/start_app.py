@@ -4,7 +4,7 @@ from operator import itemgetter
 from app.edu_cl_mail import get_mails
 
 HOST = '0.0.0.0'
-PORT = 80
+PORT = 2020
 DEBUG_PORT = 8099
 
 app = Flask(__name__)
