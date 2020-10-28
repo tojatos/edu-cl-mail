@@ -93,6 +93,9 @@ def get_mails(login, password, max_mails):
 
         return messages_datas
 
+    if max_mails == -1:
+        max_mails = last_page_num * 5 + 5
+
     max_index = min(last_page_num * 5, max_mails)
 
     flatten = lambda t: [item for sublist in t for item in sublist]
