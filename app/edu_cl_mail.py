@@ -1,13 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import multiprocessing
+from concurrent.futures import ThreadPoolExecutor
 from itertools import repeat
-
-try:
-    cpus = multiprocessing.cpu_count()
-except NotImplementedError:
-    cpus = 2   # arbitrary default
 
 base_url = 'https://edukacja.pwr.wroc.pl/EdukacjaWeb/studia.do'
 inbox_url = 'https://edukacja.pwr.wroc.pl/EdukacjaWeb/zawartoscSkrzynkiPocztowej.do'
@@ -108,12 +103,12 @@ def get_mails(login, password, max_mails):
 
     flatten = lambda t: [item for sublist in t for item in sublist]
 
-    pool = multiprocessing.Pool(processes=cpus)
-    fetched_mails = pool.starmap(get_five_mails, zip(indexes, repeat(s), repeat(web_token), repeat(web_session_token)))
+    with ThreadPoolExecutor(max_workers=50) as pool:
+        fetched_mails = pool.map(get_five_mails, indexes, repeat(s), repeat(web_token), repeat(web_session_token))
 
-    result_mails = flatten(fetched_mails)[:max_mails]
+        result_mails = flatten(fetched_mails)[:max_mails]
 
-    return result_mails
+        return result_mails
 
 def get_all_mails(login, password):
     return get_mails(login, password, -1)
