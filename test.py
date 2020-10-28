@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import pprint
 from app.edu_cl_mail import get_all_mails, get_mails
