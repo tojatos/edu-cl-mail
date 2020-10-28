@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from operator import itemgetter
-from app.edu_cl_mail import get_mails
+from app.edu_cl_mail import get_mails, get_all_mails
 from flask_cors import CORS
 
 from dotenv import load_dotenv
@@ -22,8 +22,17 @@ SSL_CERT_KEY_LOCATION = get_env('SSL_CERT_KEY_LOCATION', 'key.pem')
 app = Flask(__name__)
 CORS(app)
 
+@app.route("/api/get_mails", methods=['POST'])
+def get_mails_all():
+    try:
+        username, password = itemgetter('username', 'password')(request.json)
+        mails = get_all_mails(username, password)
+        return jsonify(mails)
+    except:
+        return jsonify('invalid credentials or internal error')
+
 @app.route("/api/get_mails/<amount>", methods=['POST'])
-def main(amount):
+def get_mails_amount(amount):
     try:
         username, password = itemgetter('username', 'password')(request.json)
         mails = get_mails(username, password, int(amount))
