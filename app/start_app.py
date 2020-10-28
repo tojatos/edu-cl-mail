@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from operator import itemgetter
 from app.edu_cl_mail import get_mails
+from flask_cors import CORS
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -19,6 +20,7 @@ SSL_CERT_LOCATION = get_env('SSL_CERT_LOCATION', 'cert.pem')
 SSL_CERT_KEY_LOCATION = get_env('SSL_CERT_KEY_LOCATION', 'key.pem')
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/api/get_mails/<amount>", methods=['POST'])
 def main(amount):
