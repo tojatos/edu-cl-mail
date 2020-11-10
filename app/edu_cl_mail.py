@@ -23,7 +23,7 @@ def get_mail_content(row_id, s, web_session_token):
     table = mail_content_soup.find('table', {'class': 'KOLOROWA'})
     tds = table.find_all('td', class_='BIALA')
     content = str(tds[15])
-    return content.split('-->')[-1].replace('<br/>','\n').replace('</td>', '').replace('\r', '').strip()
+    return content.split('-->')[-1].replace('</br>', '').replace('<br>', '').replace('<br/>','\n').replace('</td>', '').replace('\r', '').strip()
 
 
 def get_five_mails(paging_range_start, s, web_token, web_session_token):
