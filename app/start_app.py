@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from operator import itemgetter
-from app.edu_cl_mail import get_mails, get_all_mails
+from app.edu_cl_mail import get_mails, get_all_mails, get_amount_inbox, get_all_inbox
 from flask_cors import CORS
 
 from dotenv import load_dotenv
@@ -40,9 +40,27 @@ def get_mails_amount(amount):
     except:
         return jsonify('invalid credentials or internal error')
 
+
+@app.route("/api/inbox/<name>", methods=['POST'])
+def inbox_all(name):
+    try:
+        username, password = itemgetter('username', 'password')(request.json)
+        mails = get_all_inbox(username, password, name)
+        return jsonify(mails)
+    except:
+        return jsonify('invalid credentials or internal error')
+
+@app.route("/api/inbox/<name>/<amount>", methods=['POST'])
+def inbox_amount(name, amount):
+    try:
+        username, password = itemgetter('username', 'password')(request.json)
+        mails = get_amount_inbox(username, password, int(amount), name)
+        return jsonify(mails)
+    except:
+        return jsonify('invalid credentials or internal error')
+
 if __name__ == "__main__":
     if 'DEBUG' not in os.environ:
         app.run(host=HOST, port=PORT, debug=False, ssl_context=(SSL_CERT_LOCATION, SSL_CERT_KEY_LOCATION))
     else:
         app.run(host=HOST, port=DEBUG_PORT, debug=True)
-
