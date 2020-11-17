@@ -16,6 +16,27 @@ id_skrzynek = {
     'usuniete': 1246404,
 }
 
+def check_login(login, password):
+    s = requests.Session()
+
+    req = s.get(base_url)
+    soup = BeautifulSoup(req.content, 'html.parser')
+    web_token = soup.find('input', {'name': 'cl.edu.web.TOKEN'}).get('value')
+
+    data = {
+        'cl.edu.web.TOKEN': web_token,
+        'login': login,
+        'password': password,
+    }
+
+    login_res = s.post(login_url, data=data)
+    login_soup = BeautifulSoup(login_res.content, 'html.parser')
+
+    title = login_soup.find('title').string
+    if 'Studia' in title:
+        return True
+    return False
+
 def get_mail_content(row_id, s, web_session_token):
     mail_content_params = {
         'clEduWebSESSIONTOKEN': web_session_token,
