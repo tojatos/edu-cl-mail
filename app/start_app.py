@@ -24,6 +24,7 @@ CORS(app)
 
 @app.route("/api/login_check", methods=['POST'])
 def login_check():
+    """ returns "true", "false" or "invalid credentials or internal error" """
     try:
         username, password = itemgetter('username', 'password')(request.json)
         login_status = check_login(username, password)
@@ -33,6 +34,7 @@ def login_check():
 
 @app.route("/api/get_mails", methods=['POST'])
 def get_mails_all():
+    """ returns all mails from the default inbox """
     try:
         username, password = itemgetter('username', 'password')(request.json)
         mails = get_all_mails(username, password)
@@ -40,11 +42,12 @@ def get_mails_all():
     except:
         return jsonify('invalid credentials or internal error')
 
-@app.route("/api/get_mails/<amount>", methods=['POST'])
+@app.route("/api/get_mails/<int:amount>", methods=['POST'])
 def get_mails_amount(amount):
+    """ returns max <amount> mails from the inbox """
     try:
         username, password = itemgetter('username', 'password')(request.json)
-        mails = get_mails(username, password, int(amount))
+        mails = get_mails(username, password, amount)
         return jsonify(mails)
     except:
         return jsonify('invalid credentials or internal error')
@@ -52,6 +55,7 @@ def get_mails_amount(amount):
 
 @app.route("/api/inbox/<name>", methods=['POST'])
 def inbox_all(name):
+    """ returns all mails from the inbox <name>"""
     try:
         username, password = itemgetter('username', 'password')(request.json)
         mails = get_all_inbox(username, password, name)
@@ -59,11 +63,12 @@ def inbox_all(name):
     except:
         return jsonify('invalid credentials or internal error')
 
-@app.route("/api/inbox/<name>/<amount>", methods=['POST'])
+@app.route("/api/inbox/<name>/<int:amount>", methods=['POST'])
 def inbox_amount(name, amount):
+    """ returns <amount> mails from the inbox <name>"""
     try:
         username, password = itemgetter('username', 'password')(request.json)
-        mails = get_amount_inbox(username, password, int(amount), name)
+        mails = get_amount_inbox(username, password, amount, name)
         return jsonify(mails)
     except:
         return jsonify('invalid credentials or internal error')
