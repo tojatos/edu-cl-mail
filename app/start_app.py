@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from operator import itemgetter
-from app.edu_cl_mail import get_mails, get_all_mails, get_amount_inbox, get_all_inbox, check_login
+from app.edu_cl_mail import get_mails, get_all_mails, get_amount_inbox, get_all_inbox, check_login, get_page_inbox
 from flask_cors import CORS
 
 from dotenv import load_dotenv
@@ -69,6 +69,16 @@ def inbox_amount(name, amount):
     try:
         username, password = itemgetter('username', 'password')(request.json)
         mails = get_amount_inbox(username, password, amount, name)
+        return jsonify(mails)
+    except:
+        return jsonify('invalid credentials or internal error')
+
+@app.route("/api/inbox_page/<name>/<int:page>", methods=['POST'])
+def inbox_page(name, page):
+    """ returns max 5 mails from page <page> in the inbox <name>"""
+    try:
+        username, password = itemgetter('username', 'password')(request.json)
+        mails = get_page_inbox(username, password, page, name)
         return jsonify(mails)
     except:
         return jsonify('invalid credentials or internal error')
