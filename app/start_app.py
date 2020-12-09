@@ -5,13 +5,16 @@ from app.edu_cl_mail import get_mails, get_all_mails, get_amount_inbox, get_all_
 from flask_cors import CORS
 
 from dotenv import load_dotenv
+
 load_dotenv()
+
 
 def get_env(key, fallback):
     try:
         return os.environ[key]
     except:
         return fallback
+
 
 HOST = get_env('HOST', '0.0.0.0')
 PORT = get_env('PORT', 80)
@@ -21,6 +24,7 @@ SSL_CERT_KEY_LOCATION = get_env('SSL_CERT_KEY_LOCATION', 'key.pem')
 
 app = Flask(__name__)
 CORS(app)
+
 
 @app.route("/api/login_check", methods=['POST'])
 def login_check():
@@ -32,6 +36,7 @@ def login_check():
     except:
         return jsonify('invalid credentials or internal error')
 
+
 @app.route("/api/get_mails", methods=['POST'])
 def get_mails_all():
     """ returns all mails from the default inbox """
@@ -41,6 +46,7 @@ def get_mails_all():
         return jsonify(mails)
     except:
         return jsonify('invalid credentials or internal error')
+
 
 @app.route("/api/get_mails/<int:amount>", methods=['POST'])
 def get_mails_amount(amount):
@@ -63,6 +69,7 @@ def inbox_all(name):
     except:
         return jsonify('invalid credentials or internal error')
 
+
 @app.route("/api/inbox/<name>/<int:amount>", methods=['POST'])
 def inbox_amount(name, amount):
     """ returns <amount> mails from the inbox <name>"""
@@ -73,6 +80,7 @@ def inbox_amount(name, amount):
     except:
         return jsonify('invalid credentials or internal error')
 
+
 @app.route("/api/inbox_page/<name>/<int:page>", methods=['POST'])
 def inbox_page(name, page):
     """ returns max 5 mails from page <page> in the inbox <name>"""
@@ -82,6 +90,7 @@ def inbox_page(name, page):
         return jsonify(mails)
     except:
         return jsonify('invalid credentials or internal error')
+
 
 if __name__ == "__main__":
     if 'DEBUG' not in os.environ:

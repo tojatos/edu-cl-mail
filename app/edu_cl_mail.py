@@ -5,11 +5,17 @@ from concurrent.futures import ThreadPoolExecutor
 from itertools import repeat
 from dataclasses import dataclass
 
+
 @dataclass
 class EduClAuth:
     session: requests.sessions.Session
     web_token: str
     web_session_token: str
+
+
+@dataclass
+class EduClAuthFail:
+    pass
 
 
 base_url = 'https://edukacja.pwr.wroc.pl/EdukacjaWeb/studia.do'
@@ -24,26 +30,6 @@ id_skrzynek = {
     'usuniete': 1246404,
 }
 
-def check_login(login, password):
-    s = requests.Session()
-
-    req = s.get(base_url)
-    soup = BeautifulSoup(req.content, 'html.parser')
-    web_token = soup.find('input', {'name': 'cl.edu.web.TOKEN'}).get('value')
-
-    data = {
-        'cl.edu.web.TOKEN': web_token,
-        'login': login,
-        'password': password,
-    }
-
-    login_res = s.post(login_url, data=data)
-    login_soup = BeautifulSoup(login_res.content, 'html.parser')
-
-    title = login_soup.find('title').string
-    if 'Studia' in title:
-        return True
-    return False
 
 def get_mail_content(row_id, edu_cl_auth: EduClAuth):
     mail_content_params = {
@@ -59,7 +45,8 @@ def get_mail_content(row_id, edu_cl_auth: EduClAuth):
     table = mail_content_soup.find('table', {'class': 'KOLOROWA'})
     tds = table.find_all('td', class_='BIALA')
     content = str(tds[15])
-    return content.split('-->')[-1].replace('</br>', '').replace('<br>', '').replace('<br/>','\n').replace('</td>', '').replace('\r', '').strip()
+    return content.split('-->')[-1].replace('</br>', '').replace('<br>', '').replace('<br/>', '\n').replace('</td>', '').replace('\r', '').strip()
+
 
 def get_messages_datas(tds, headers, edu_cl_auth: EduClAuth):
     header_to_json_key_map = {
@@ -87,7 +74,7 @@ def get_messages_datas(tds, headers, edu_cl_auth: EduClAuth):
             continue
         temp_data[json_key] = td.text.strip()
         if json_key == 'title':
-            row_id = re.findall(r'rowId=(.*)&',td.find('a').attrs['href'])[0]
+            row_id = re.findall(r'rowId=(.*)&', td.find('a').attrs['href'])[0]
             temp_data['message'] = get_mail_content(row_id, edu_cl_auth)
 
         i += 1
@@ -98,8 +85,9 @@ def get_messages_datas(tds, headers, edu_cl_auth: EduClAuth):
 
     return messages_datas
 
+
 def get_five_mails(paging_range_start, edu_cl_auth: EduClAuth):
-    '''get five mails from paging_range_start'''
+    """get five mails from paging_range_start"""
     inbox_data = {
         'cl.edu.web.TOKEN': edu_cl_auth.web_token,
         'clEduWebSESSIONTOKEN': edu_cl_auth.web_session_token,
@@ -121,6 +109,7 @@ def get_five_mails(paging_range_start, edu_cl_auth: EduClAuth):
 
     return messages_datas
 
+
 def init_inbox(inbox, edu_cl_auth: EduClAuth):
     """ init inbox, following post requests will not work otherwise """
     inbox_id = id_skrzynek[inbox]
@@ -137,16 +126,17 @@ def init_inbox(inbox, edu_cl_auth: EduClAuth):
     inbox_init_res = edu_cl_auth.session.get(inbox_url, params=inbox_init_params)
     return inbox_init_res
 
+
 def get_last_page_num(inbox_init_res):
-    paging_numerics = BeautifulSoup(inbox_init_res.content, 'html.parser').find_all('input', class_='paging-numeric-btn')
-    if not paging_numerics: # only one page
+    paging_numerics = BeautifulSoup(inbox_init_res.content, 'html.parser').find_all('input',
+                                                                                    class_='paging-numeric-btn')
+    if not paging_numerics:  # only one page
         return 1
     return int(paging_numerics[-1].get('value'))
 
 
-
 def get_mails(login, password, max_mails, inbox='odbiorcza'):
-    '''-1 in max_mails means infinity'''
+    """-1 in max_mails means infinity"""
 
     edu_cl_auth = get_edu_cl_auth(login, password)
 
@@ -160,7 +150,7 @@ def get_mails(login, password, max_mails, inbox='odbiorcza'):
     max_index = min(last_page_num * 5, max_mails)
     indexes = range(0, max_index, 5)
 
-    flatten = lambda t: [item for sublist in t for item in sublist]
+    def flatten(t): return [item for sublist in t for item in sublist]
 
     with ThreadPoolExecutor(max_workers=50) as pool:
         fetched_mails = pool.map(get_five_mails, indexes, repeat(edu_cl_auth))
@@ -169,7 +159,8 @@ def get_mails(login, password, max_mails, inbox='odbiorcza'):
 
         return result_mails
 
-def get_edu_cl_auth(login, password) -> EduClAuth:
+
+def get_edu_cl_auth(login, password):
     s = requests.Session()
 
     req = s.get(base_url)
@@ -186,21 +177,32 @@ def get_edu_cl_auth(login, password) -> EduClAuth:
     login_soup = BeautifulSoup(login_res.content, 'html.parser')
 
     web_session_token = login_soup.find('input', {'name': 'clEduWebSESSIONTOKEN'}).get('value')
-
-    return EduClAuth(s, web_token, web_session_token)
-
+    title = login_soup.find('title').string
+    login_successful = 'Studia' in title
+    if login_successful:
+        return EduClAuth(s, web_token, web_session_token)
+    return EduClAuthFail()
 
 
 def get_amount_inbox(login, password, amount, inbox):
     return get_mails(login, password, amount, inbox)
 
+
 def get_all_inbox(login, password, inbox):
     return get_mails(login, password, -1, inbox)
+
 
 def get_all_mails(login, password):
     return get_mails(login, password, -1)
 
+
 def get_page_inbox(login, password, page, inbox):
     edu_cl_auth = get_edu_cl_auth(login, password)
     init_inbox(inbox, edu_cl_auth)
-    return get_five_mails(page*5-5, edu_cl_auth)
+    return get_five_mails(page * 5 - 5, edu_cl_auth)
+
+
+def check_login(login, password):
+    edu_cl_auth = get_edu_cl_auth(login, password)
+    print(edu_cl_auth)
+    return type(edu_cl_auth) is not EduClAuthFail
