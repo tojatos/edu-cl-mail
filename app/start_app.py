@@ -1,5 +1,7 @@
 import os
-from flask import Flask, request, jsonify
+from functools import wraps
+
+from flask import Flask, request, jsonify, g
 from operator import itemgetter
 from app.edu_cl_mail import get_mails, get_all_mails, get_amount_inbox, get_all_inbox, check_login, get_page_inbox
 from flask_cors import CORS
@@ -12,7 +14,7 @@ load_dotenv()
 def get_env(key, fallback):
     try:
         return os.environ[key]
-    except:
+    except KeyError:
         return fallback
 
 
@@ -26,70 +28,63 @@ app = Flask(__name__)
 CORS(app)
 
 
+@app.before_request
+def before_request():
+    if request.json:
+        g.username, g.password = itemgetter('username', 'password')(request.json)
+
+
+def try_jsonify(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return jsonify(func(*args, **kwargs))
+        except:
+            return jsonify('invalid credentials or internal error')
+
+    return wrapper
+
+
 @app.route("/api/login_check", methods=['POST'])
+@try_jsonify
 def login_check():
     """ returns "true", "false" or "invalid credentials or internal error" """
-    try:
-        username, password = itemgetter('username', 'password')(request.json)
-        login_status = check_login(username, password)
-        return jsonify(login_status)
-    except:
-        return jsonify('invalid credentials or internal error')
+    return check_login(g.username, g.password)
 
 
 @app.route("/api/get_mails", methods=['POST'])
+@try_jsonify
 def get_mails_all():
     """ returns all mails from the default inbox """
-    try:
-        username, password = itemgetter('username', 'password')(request.json)
-        mails = get_all_mails(username, password)
-        return jsonify(mails)
-    except:
-        return jsonify('invalid credentials or internal error')
+    return get_all_mails(g.username, g.password)
 
 
 @app.route("/api/get_mails/<int:amount>", methods=['POST'])
+@try_jsonify
 def get_mails_amount(amount):
     """ returns max <amount> mails from the inbox """
-    try:
-        username, password = itemgetter('username', 'password')(request.json)
-        mails = get_mails(username, password, amount)
-        return jsonify(mails)
-    except:
-        return jsonify('invalid credentials or internal error')
+    return get_mails(g.username, g.password, amount)
 
 
 @app.route("/api/inbox/<name>", methods=['POST'])
+@try_jsonify
 def inbox_all(name):
     """ returns all mails from the inbox <name>"""
-    try:
-        username, password = itemgetter('username', 'password')(request.json)
-        mails = get_all_inbox(username, password, name)
-        return jsonify(mails)
-    except:
-        return jsonify('invalid credentials or internal error')
+    return get_all_inbox(g.username, g.password, name)
 
 
 @app.route("/api/inbox/<name>/<int:amount>", methods=['POST'])
+@try_jsonify
 def inbox_amount(name, amount):
     """ returns <amount> mails from the inbox <name>"""
-    try:
-        username, password = itemgetter('username', 'password')(request.json)
-        mails = get_amount_inbox(username, password, amount, name)
-        return jsonify(mails)
-    except:
-        return jsonify('invalid credentials or internal error')
+    return get_amount_inbox(g.username, g.password, amount, name)
 
 
 @app.route("/api/inbox_page/<name>/<int:page>", methods=['POST'])
+@try_jsonify
 def inbox_page(name, page):
     """ returns max 5 mails from page <page> in the inbox <name>"""
-    try:
-        username, password = itemgetter('username', 'password')(request.json)
-        mails = get_page_inbox(username, password, page, name)
-        return jsonify(mails)
-    except:
-        return jsonify('invalid credentials or internal error')
+    return get_page_inbox(g.username, g.password, page, name)
 
 
 if __name__ == "__main__":
