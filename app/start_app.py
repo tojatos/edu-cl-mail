@@ -3,7 +3,8 @@ from functools import wraps
 
 from flask import Flask, request, jsonify, g
 from operator import itemgetter
-from app.edu_cl_mail import get_mails, get_all_mails, get_amount_inbox, get_all_inbox, check_login, get_page_inbox
+from app.edu_cl_mail import get_mails, get_all_mails, get_amount_inbox, get_all_inbox, check_login, get_page_inbox, \
+    get_pages_num, get_mails_num
 from flask_cors import CORS
 
 from dotenv import load_dotenv
@@ -85,6 +86,20 @@ def inbox_amount(name, amount):
 def inbox_page(name, page):
     """ returns max 5 mails from page <page> in the inbox <name>"""
     return get_page_inbox(g.username, g.password, page, name)
+
+
+@app.route("/api/num_pages/<name>", methods=['POST'])
+@try_jsonify
+def num_pages(name):
+    """ returns page numbers in the inbox <name>"""
+    return get_pages_num(g.username, g.password, name)
+
+
+@app.route("/api/num_mails/<name>", methods=['POST'])
+@try_jsonify
+def num_mails(name):
+    """ returns number of mails in the inbox <name>"""
+    return get_mails_num(g.username, g.password, name)
 
 
 if __name__ == "__main__":

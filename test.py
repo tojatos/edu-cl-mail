@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import pprint
-from app.edu_cl_mail import get_all_mails, get_mails
+from app.edu_cl_mail import get_all_mails, get_mails, get_mails_num, get_pages_num
 import time
 
 
@@ -26,3 +26,7 @@ if __name__ == "__main__":
     # print(mails[2]['message'])
     print(len(mails))
     print(mails[1])
+    print(get_mails_num(os.environ['LOGIN'], os.environ['PASSWORD'], 'odbiorcza'))
+    print(get_pages_num(os.environ['LOGIN'], os.environ['PASSWORD'], 'odbiorcza'))
+    print(get_mails_num(os.environ['LOGIN'], os.environ['PASSWORD'], 'nadawcza'))
+    print(get_pages_num(os.environ['LOGIN'], os.environ['PASSWORD'], 'nadawcza'))

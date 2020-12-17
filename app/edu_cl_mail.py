@@ -45,7 +45,9 @@ def get_mail_content(row_id, edu_cl_auth: EduClAuth):
     table = mail_content_soup.find('table', {'class': 'KOLOROWA'})
     tds = table.find_all('td', class_='BIALA')
     content = str(tds[15])
-    return content.split('-->')[-1].replace('</br>', '').replace('<br>', '').replace('<br/>', '\n').replace('</td>', '').replace('\r', '').strip()
+    return content.split('-->')[-1].replace('</br>', '').replace('<br>', '').replace('<br/>', '\n').replace('</td>',
+                                                                                                            '').replace(
+        '\r', '').strip()
 
 
 def get_messages_datas(tds, headers, edu_cl_auth: EduClAuth):
@@ -87,7 +89,7 @@ def get_messages_datas(tds, headers, edu_cl_auth: EduClAuth):
 
 
 def get_five_mails(paging_range_start, edu_cl_auth: EduClAuth):
-    """get five mails from paging_range_start"""
+    """get five mails from paging_range_start (or potentially less if this is at the end of paging) """
     inbox_data = {
         'cl.edu.web.TOKEN': edu_cl_auth.web_token,
         'clEduWebSESSIONTOKEN': edu_cl_auth.web_session_token,
@@ -139,9 +141,7 @@ def get_mails(login, password, max_mails, inbox='odbiorcza'):
     """-1 in max_mails means infinity"""
 
     edu_cl_auth = get_edu_cl_auth(login, password)
-
     inbox_init_res = init_inbox(inbox, edu_cl_auth)
-
     last_page_num = get_last_page_num(inbox_init_res)
 
     if max_mails == -1:
@@ -204,5 +204,17 @@ def get_page_inbox(login, password, page, inbox):
 
 def check_login(login, password):
     edu_cl_auth = get_edu_cl_auth(login, password)
-    print(edu_cl_auth)
     return type(edu_cl_auth) is not EduClAuthFail
+
+
+def get_pages_num(login, password, inbox):
+    edu_cl_auth = get_edu_cl_auth(login, password)
+    inbox_init_res = init_inbox(inbox, edu_cl_auth)
+    return get_last_page_num(inbox_init_res)
+
+
+def get_mails_num(login, password, inbox):
+    edu_cl_auth = get_edu_cl_auth(login, password)
+    inbox_init_res = init_inbox(inbox, edu_cl_auth)
+    last_page_num = get_last_page_num(inbox_init_res)
+    return len(get_five_mails(last_page_num * 5 - 5, edu_cl_auth)) + (last_page_num - 1) * 5
