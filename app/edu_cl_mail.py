@@ -23,11 +23,11 @@ inbox_url = 'https://edukacja.pwr.wroc.pl/EdukacjaWeb/zawartoscSkrzynkiPocztowej
 mail_content_url = 'https://edukacja.pwr.wroc.pl/EdukacjaWeb/podgladWiadomosci.do'
 login_url = 'https://edukacja.pwr.wroc.pl/EdukacjaWeb/logInUser.do'
 
-id_skrzynek = {
-    'odbiorcza': 1246406,
-    'nadawcza': 1246405,
-    'robocza': 1246407,
-    'usuniete': 1246404,
+inbox_ids = {
+    'odbiorcza': 0,
+    'nadawcza': 1,
+    'robocza': 2,
+    'usuniete': 3,
 }
 
 
@@ -112,16 +112,33 @@ def get_five_mails(paging_range_start, edu_cl_auth: EduClAuth):
     return messages_datas
 
 
+def get_inbox_real_id(inbox, edu_cl_auth: EduClAuth):
+    """ returns real id of inbox """
+    inbox_id = inbox_ids[inbox]
+
+    inbox_params = {
+        'clEduWebSESSIONTOKEN': edu_cl_auth.web_session_token,
+        'cl.edu.web.TOKEN': edu_cl_auth.web_token,
+        'event': 'defaultPostBox',
+    }
+
+    inbox_res = edu_cl_auth.session.get(inbox_url, params=inbox_params)
+    options = BeautifulSoup(inbox_res.content, 'html.parser').find('select', id='wyborSkrzynek').findChildren('option')
+    inbox_real_id = options[inbox_id].attrs['value']
+    # print(inbox_real_id)
+    return inbox_real_id
+
+
 def init_inbox(inbox, edu_cl_auth: EduClAuth):
     """ init inbox, following post requests will not work otherwise """
-    inbox_id = id_skrzynek[inbox]
+    inbox_real_id = get_inbox_real_id(inbox, edu_cl_auth)
 
     inbox_init_params = {
         'clEduWebSESSIONTOKEN': edu_cl_auth.web_session_token,
         'cl.edu.web.TOKEN': edu_cl_auth.web_token,
         'event': 'positionPostBox',
-        'rowId': inbox_id,
-        'SkrzynkaWiadomosciTable': inbox_id,
+        'rowId': inbox_real_id,
+        'SkrzynkaWiadomosciTable': inbox_real_id,
         'positionIterator': 'SkrzynkaWiadomosciROViewIterator',
     }
 
