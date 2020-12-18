@@ -42,12 +42,9 @@ def get_mail_content(row_id, edu_cl_auth: EduClAuth):
 
     mail_content_soup = BeautifulSoup(mail_content_res.content, 'html.parser')
 
-    table = mail_content_soup.find('table', {'class': 'KOLOROWA'})
-    tds = table.find_all('td', class_='BIALA')
-    content = str(tds[15])
-    return content.split('-->')[-1].replace('</br>', '').replace('<br>', '').replace('<br/>', '\n').replace('</td>',
-                                                                                                            '').replace(
-        '\r', '').strip()
+    content = str(mail_content_soup.find(string=re.compile('Treść:')).parent.find_next('td'))
+    content = content.split('-->')[-1].replace('</br>', '').replace('<br>', '').replace('<br/>', '\n')
+    return content.replace('</td>', '').replace('\r', '').strip()
 
 
 def get_messages_datas(tds, headers, edu_cl_auth: EduClAuth):
@@ -63,6 +60,7 @@ def get_messages_datas(tds, headers, edu_cl_auth: EduClAuth):
         'Data otrzymania': 'date',
         'Data wysłania': 'date',
         'Data utworzenia': 'date',
+        'Data usunięcia': 'date',
     }
 
     i = 0
