@@ -192,8 +192,8 @@ def get_edu_cl_auth(login, password):
     login_soup = BeautifulSoup(login_res.content, 'html.parser')
 
     web_session_token = login_soup.find('input', {'name': 'clEduWebSESSIONTOKEN'}).get('value')
-    title = login_soup.find('title').string
-    login_successful = 'Studia' in title
+    logged_in_element = login_soup.find('td', class_ = 'ZALOGOWANY_UZYT')
+    login_successful = logged_in_element is not None
     if login_successful:
         return EduClAuth(s, web_token, web_session_token)
     return EduClAuthFail()

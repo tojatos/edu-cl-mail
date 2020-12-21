@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import pprint
-from app.edu_cl_mail import get_all_mails, get_mails, get_mails_num, get_pages_num
+from app.edu_cl_mail import get_all_mails, get_mails, get_mails_num, get_pages_num, check_login
 import time
 
 
@@ -16,16 +16,18 @@ if __name__ == "__main__":
 
     start = time.time()
     # mails = get_mails(os.environ['LOGIN'], os.environ['PASSWORD'], 20)
-    mails = get_mails(os.environ['LOGIN'], os.environ['PASSWORD'], 5, 'robocza')
+    # mails = get_mails(os.environ['LOGIN'], os.environ['PASSWORD'], 5, 'robocza')
     # mails = get_mails(os.environ['LOGIN'], os.environ['PASSWORD'], 5, 'odbiorcza')
     # mails = get_all_mails(os.environ['LOGIN'], os.environ['PASSWORD'])
+    l_check = check_login(os.environ['LOGIN'], os.environ['PASSWORD'])
+    print(l_check)
     end = time.time()
     print("Finished fetching mails, time:")
     print(end - start)
     # pprint.pprint(mails)
     # print(mails[2]['message'])
-    print(len(mails))
-    print(mails[0])
+    # print(len(mails))
+    # print(mails[0])
     #print(get_mails_num(os.environ['LOGIN'], os.environ['PASSWORD'], 'odbiorcza'))
     #print(get_pages_num(os.environ['LOGIN'], os.environ['PASSWORD'], 'odbiorcza'))
     #print(get_mails_num(os.environ['LOGIN'], os.environ['PASSWORD'], 'nadawcza'))
