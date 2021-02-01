@@ -42,7 +42,7 @@ def try_jsonify(func):
             return jsonify(func(*args, **kwargs))
         except Exception as e:
             print(e)
-            return jsonify('invalid credentials or internal error')
+            return jsonify('invalid credentials or internal error'), 500
 
     return wrapper
 
