@@ -19,11 +19,6 @@ USERNAME = get_env('LOGIN', '')
 PASSWORD = get_env('PASSWORD', '')
 
 
-# def test_read_main():
-#     response = client.get("/")
-#     assert response.status_code == 200
-#     assert response.json() == {"message": "Hello World"}
-
 def test_login_check_invalid_request():
     response = client.post("/api/login_check",
                            json={"usernames": "w"})
@@ -41,3 +36,24 @@ def test_login_check():
                            json={"username": USERNAME, "password": PASSWORD})
     assert response.status_code == 200
     assert response.json()["authenticated"] == True
+
+
+inboxes = [
+    'odbiorcza',
+    'nadawcza',
+    'robocza',
+    'usuniete',
+]
+
+
+def test_number_of_mails():
+    responses = [client.post(f"/api/num_mails/{i}", json={"username": USERNAME, "password": PASSWORD})
+                 for i in inboxes]
+    assert all(r.status_code == 200 for r in responses)
+    assert all(r.json()["numberOfMails"] > 0 for r in responses)
+
+
+def test_number_of_mails_incorrect_inboxes():
+    incorrect_inbox = 'test'
+    response = client.post(f"/api/num_mails/{incorrect_inbox}", json={"username": USERNAME, "password": PASSWORD})
+    assert response.status_code == 500
