@@ -4,6 +4,7 @@ async-exit-stack==1.0.1
 async-generator==1.10
 atomicwrites==1.4.0
 attrs==20.3.0
+beautifulsoup4==4.9.3
 certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
@@ -34,6 +35,7 @@ PyYAML==5.4.1
 requests==2.25.1
 Rx==1.6.1
 six==1.15.0
+soupsieve==2.2.1
 starlette==0.13.6
 toml==0.10.2
 typing-extensions==3.7.4.3
