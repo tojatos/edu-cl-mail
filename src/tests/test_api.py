@@ -57,3 +57,12 @@ def test_number_of_mails_incorrect_inboxes():
     incorrect_inbox = 'test'
     response = client.post(f"/api/num_mails/{incorrect_inbox}", json={"username": USERNAME, "password": PASSWORD})
     assert response.status_code == 500
+
+
+def test_mail_range_odbiorcza():
+    from_ = 1
+    to_ = 1
+    response = client.post(f"/api/mail_range/odbiorcza/{from_}/{to_}",
+                       json={"username": USERNAME, "password": PASSWORD})
+    assert response.status_code == 200
+    assert len(response.json()) == 1

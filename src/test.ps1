@@ -1,1 +1,1 @@
-python -m pytest tests --disable-pytest-warnings
+python -m pytest tests --disable-pytest-warnings -n3
