@@ -192,7 +192,7 @@ def get_edu_cl_auth(login, password):
     login_soup = BeautifulSoup(login_res.content, 'html.parser')
 
     web_session_token = login_soup.find('input', {'name': 'clEduWebSESSIONTOKEN'}).get('value')
-    logged_in_element = login_soup.find('td', class_ = 'ZALOGOWANY_UZYT')
+    logged_in_element = login_soup.find('td', class_='ZALOGOWANY_UZYT')
     login_successful = logged_in_element is not None
     if login_successful:
         return EduClAuth(s, web_token, web_session_token)
@@ -233,3 +233,25 @@ def get_mails_num(login, password, inbox):
     inbox_init_res = init_inbox(inbox, edu_cl_auth)
     last_page_num = get_last_page_num(inbox_init_res)
     return len(get_five_mails(last_page_num * 5 - 5, edu_cl_auth)) + (last_page_num - 1) * 5
+
+
+def get_mail_range(edu_cl_auth, from_, to_):
+    # last_page_num = get_last_page_num(inbox_init_res)
+    #
+    # if max_mails == -1:
+    #     max_mails = last_page_num * 5 + 5
+    #
+    # max_index = min(last_page_num * 5, max_mails)
+    # indexes = range(0, max_index, 5)
+    pass
+
+
+def get_mail_range_odbiorcza(login, password, from_, to_):
+    if from_ < 1:
+        raise
+
+    edu_cl_auth = get_edu_cl_auth(login, password)
+    inbox_init_res = init_inbox("odbiorcza", edu_cl_auth)
+    last_page_num = get_last_page_num(inbox_init_res)
+
+    return get_mail_range(inbox_init_res, from_, to_)
