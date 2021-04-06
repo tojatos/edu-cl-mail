@@ -47,7 +47,7 @@ def get_mail_content(row_id, edu_cl_auth: EduClAuth):
     return content.replace('</td>', '').replace('\r', '').strip()
 
 
-def get_messages_datas(tds, headers, edu_cl_auth: EduClAuth):
+def get_messages_data_list(tds, headers):
     header_to_json_key_map = {
         '': '',
         '!': '',
@@ -75,7 +75,8 @@ def get_messages_datas(tds, headers, edu_cl_auth: EduClAuth):
         temp_data[json_key] = td.text.strip()
         if json_key == 'title':
             row_id = re.findall(r'rowId=(.*)&', td.find('a').attrs['href'])[0]
-            temp_data['message'] = get_mail_content(row_id, edu_cl_auth)
+            temp_data['row_id'] = row_id
+            # get_mail_content(row_id, edu_cl_auth)
 
         i += 1
         if i % len(headers) == 0:
@@ -105,9 +106,9 @@ def get_five_mails(paging_range_start, edu_cl_auth: EduClAuth):
     headers = [x.text.strip() for x in header_tds]
     tds = table.find_all('td', class_='BIALA')
 
-    messages_datas = get_messages_datas(tds, headers, edu_cl_auth)
+    messages_data_list = get_messages_data_list(tds, headers)
 
-    return messages_datas
+    return messages_data_list
 
 
 def get_inbox_real_id(inbox, edu_cl_auth: EduClAuth):
@@ -152,29 +153,6 @@ def get_last_page_num(inbox_init_res):
     return int(paging_numerics[-1].get('value'))
 
 
-def get_mails(login, password, max_mails, inbox='odbiorcza'):
-    """-1 in max_mails means infinity"""
-
-    edu_cl_auth = get_edu_cl_auth(login, password)
-    inbox_init_res = init_inbox(inbox, edu_cl_auth)
-    last_page_num = get_last_page_num(inbox_init_res)
-
-    if max_mails == -1:
-        max_mails = last_page_num * 5 + 5
-
-    max_index = min(last_page_num * 5, max_mails)
-    indexes = range(0, max_index, 5)
-
-    def flatten(t): return [item for sublist in t for item in sublist]
-
-    with ThreadPoolExecutor(max_workers=50) as pool:
-        fetched_mails = pool.map(get_five_mails, indexes, repeat(edu_cl_auth))
-
-        result_mails = flatten(fetched_mails)[:max_mails]
-
-        return result_mails
-
-
 def get_edu_cl_auth(login, password):
     s = requests.Session()
 
@@ -199,59 +177,53 @@ def get_edu_cl_auth(login, password):
     return EduClAuthFail()
 
 
-def get_amount_inbox(login, password, amount, inbox):
-    return get_mails(login, password, amount, inbox)
-
-
-def get_all_inbox(login, password, inbox):
-    return get_mails(login, password, -1, inbox)
-
-
-def get_all_mails(login, password):
-    return get_mails(login, password, -1)
-
-
-def get_page_inbox(login, password, page, inbox):
-    edu_cl_auth = get_edu_cl_auth(login, password)
-    init_inbox(inbox, edu_cl_auth)
-    return get_five_mails(page * 5 - 5, edu_cl_auth)
-
-
 def check_login(login, password):
     edu_cl_auth = get_edu_cl_auth(login, password)
     return type(edu_cl_auth) is not EduClAuthFail
 
 
-def get_pages_num(login, password, inbox):
-    edu_cl_auth = get_edu_cl_auth(login, password)
-    inbox_init_res = init_inbox(inbox, edu_cl_auth)
-    return get_last_page_num(inbox_init_res)
-
-
-def get_mails_num(login, password, inbox):
-    edu_cl_auth = get_edu_cl_auth(login, password)
-    inbox_init_res = init_inbox(inbox, edu_cl_auth)
-    last_page_num = get_last_page_num(inbox_init_res)
+def get_mails_num_auth(edu_cl_auth: EduClAuth, last_page_num: int) -> int:
+    """requires initialized inbox"""
     return len(get_five_mails(last_page_num * 5 - 5, edu_cl_auth)) + (last_page_num - 1) * 5
 
 
-def get_mail_range(edu_cl_auth, from_, to_):
-    # last_page_num = get_last_page_num(inbox_init_res)
-    #
-    # if max_mails == -1:
-    #     max_mails = last_page_num * 5 + 5
-    #
-    # max_index = min(last_page_num * 5, max_mails)
-    # indexes = range(0, max_index, 5)
-    pass
+def get_mails_num(login, password, inbox) -> int:
+    edu_cl_auth = get_edu_cl_auth(login, password)
+    inbox_init_res = init_inbox(inbox, edu_cl_auth)
+    return get_mails_num_auth(edu_cl_auth, get_last_page_num(inbox_init_res))
 
 
-def get_mail_range_odbiorcza(login, password, from_, to_):
-    if from_ < 1:
+def get_mail_range(login, password, from_, to_, inbox="odbiorcza"):
+    if from_ < 0:
         raise
 
     edu_cl_auth = get_edu_cl_auth(login, password)
-    inbox_init_res = init_inbox("odbiorcza", edu_cl_auth)
-    last_page_num = get_last_page_num(inbox_init_res)
+    print()
 
-    return get_mail_range(inbox_init_res, from_, to_)
+    # first_index = from_
+    # last_index = from_ + to_
+    number_of_mails_to_fetch = to_ - from_ + 1
+    number_of_additional_pages_to_fetch = (number_of_mails_to_fetch - 1) // 5
+    inbox_init_res = init_inbox(inbox, edu_cl_auth)
+    last_page_num = get_last_page_num(inbox_init_res)
+    mails_num = get_mails_num_auth(edu_cl_auth, last_page_num)
+
+    paging_range_start = mails_num - to_ - 1
+    paging_range_end = paging_range_start + number_of_additional_pages_to_fetch * 5
+
+    all_paging_range_starts = range(paging_range_start, paging_range_end + 1, 5)
+
+    def flatten(t):
+        return [item for sublist in t for item in sublist]
+
+    with ThreadPoolExecutor(max_workers=50) as pool:
+        fetched_mails = pool.map(get_five_mails, all_paging_range_starts, repeat(edu_cl_auth))
+
+        result_mails = flatten(fetched_mails)[:number_of_mails_to_fetch]
+
+        fetched_messages = pool.map(get_mail_content, [x["row_id"] for x in result_mails], repeat(edu_cl_auth))
+
+        for mail, message in zip(result_mails, fetched_messages):
+            mail["message"] = message
+
+        return result_mails

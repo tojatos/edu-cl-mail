@@ -60,9 +60,18 @@ def test_number_of_mails_incorrect_inboxes():
 
 
 def test_mail_range_odbiorcza():
-    from_ = 1
-    to_ = 1
+    from_ = 0
+    to_ = 3
     response = client.post(f"/api/mail_range/odbiorcza/{from_}/{to_}",
                        json={"username": USERNAME, "password": PASSWORD})
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert len(response.json()) == 4
+
+
+# def test_mail_range_odbiorcza_many_mails():
+#     from_ = 0
+#     to_ = 470
+#     response = client.post(f"/api/mail_range/odbiorcza/{from_}/{to_}",
+#                            json={"username": USERNAME, "password": PASSWORD})
+#     assert response.status_code == 200
+#     assert len(response.json()) == 471

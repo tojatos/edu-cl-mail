@@ -4,7 +4,7 @@ from typing import List
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from .edu_cl_mail import check_login, get_mails_num, get_mail_range_odbiorcza
+from .edu_cl_mail import check_login, get_mails_num, get_mail_range
 
 
 class Credentials(BaseModel):
@@ -82,11 +82,12 @@ def num_mails(c: Credentials, name: str):
     return {"numberOfMails": mails_num}
 
 
-@app.post("/api/mail_range/odbiorcza/{from_}/{to_}", response_model=List[OdbiorczaMail])
+# @app.post("/api/mail_range/odbiorcza/{from_}/{to_}", response_model=List[OdbiorczaMail])
+@app.post("/api/mail_range/odbiorcza/{from_}/{to_}")
 def num_mails(c: Credentials, from_: int, to_: int):
     """ returns mails with ids from range {from_} - {to_} in the inbox 'odbiorcza'"""
     try:
-        mails = get_mail_range_odbiorcza(c.username, c.password, from_, to_)
+        mails = get_mail_range(c.username, c.password, from_, to_, "odbiorcza")
     except Exception:
         raise HTTPException(status_code=500, detail="internal error")
     return mails
