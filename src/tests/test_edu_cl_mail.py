@@ -33,19 +33,29 @@ def test_get_mail_num():
     assert result > 1
 
 
-def test_get_mail_range():
+def test_get_mail_range_odbiorcza():
     from_ = 1
     to_ = 12
     result = get_mail_range(USERNAME, PASSWORD, from_, to_, "odbiorcza")
     assert len(result) == to_ - from_ + 1
 
-# def test_get_page_to_range_map():
-#     assert False
-    # result = get_mails_num(USERNAME, PASSWORD, "odbiorcza")
-    # assert result > 1
+
+def test_get_mail_range_nadawcza():
+    from_ = 0
+    to_ = 2
+    result = get_mail_range(USERNAME, PASSWORD, from_, to_, "nadawcza")
+    assert len(result) == to_ - from_ + 1
 
 
-# def test_get_message_row_ids_from_page():
-#     assert False
-    # result = get_mails_num(USERNAME, PASSWORD, "odbiorcza")
-    # assert result > 1
+def test_get_mail_range_robocza():
+    from_ = 0
+    to_ = 2
+    result = get_mail_range(USERNAME, PASSWORD, from_, to_, "robocza")
+    assert len(result) == to_ - from_ + 1
+
+
+def test_get_mail_range_usuniete():
+    from_ = 0
+    to_ = 0
+    result = get_mail_range(USERNAME, PASSWORD, from_, to_, "usuniete")
+    assert len(result) == to_ - from_ + 1

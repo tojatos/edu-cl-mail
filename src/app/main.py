@@ -82,12 +82,42 @@ def num_mails(c: Credentials, name: str):
     return {"numberOfMails": mails_num}
 
 
-# @app.post("/api/mail_range/odbiorcza/{from_}/{to_}", response_model=List[OdbiorczaMail])
 @app.post("/api/mail_range/odbiorcza/{from_}/{to_}")
+# @app.post("/api/mail_range/odbiorcza/{from_}/{to_}", response_model=List[OdbiorczaMail])
 def num_mails(c: Credentials, from_: int, to_: int):
     """ returns mails with ids from range {from_} - {to_} in the inbox 'odbiorcza'"""
     try:
         mails = get_mail_range(c.username, c.password, from_, to_, "odbiorcza")
+    except Exception:
+        raise HTTPException(status_code=500, detail="internal error")
+    return mails
+
+
+@app.post("/api/mail_range/nadawcza/{from_}/{to_}")
+def num_mails(c: Credentials, from_: int, to_: int):
+    """ returns mails with ids from range {from_} - {to_} in the inbox 'nadawcza'"""
+    try:
+        mails = get_mail_range(c.username, c.password, from_, to_, "nadawcza")
+    except Exception:
+        raise HTTPException(status_code=500, detail="internal error")
+    return mails
+
+
+@app.post("/api/mail_range/robocza/{from_}/{to_}")
+def num_mails(c: Credentials, from_: int, to_: int):
+    """ returns mails with ids from range {from_} - {to_} in the inbox 'robocza'"""
+    try:
+        mails = get_mail_range(c.username, c.password, from_, to_, "robocza")
+    except Exception:
+        raise HTTPException(status_code=500, detail="internal error")
+    return mails
+
+
+@app.post("/api/mail_range/usuniete/{from_}/{to_}")
+def num_mails(c: Credentials, from_: int, to_: int):
+    """ returns mails with ids from range {from_} - {to_} in the inbox 'usuniete'"""
+    try:
+        mails = get_mail_range(c.username, c.password, from_, to_, "usuniete")
     except Exception:
         raise HTTPException(status_code=500, detail="internal error")
     return mails

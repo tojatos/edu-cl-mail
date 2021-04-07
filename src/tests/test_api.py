@@ -65,7 +65,7 @@ def test_mail_range_odbiorcza():
     response = client.post(f"/api/mail_range/odbiorcza/{from_}/{to_}",
                        json={"username": USERNAME, "password": PASSWORD})
     assert response.status_code == 200
-    assert len(response.json()) == 4
+    assert len(response.json()) == to_ - from_ + 1
 
 
 # def test_mail_range_odbiorcza_many_mails():
@@ -75,3 +75,31 @@ def test_mail_range_odbiorcza():
 #                            json={"username": USERNAME, "password": PASSWORD})
 #     assert response.status_code == 200
 #     assert len(response.json()) == 471
+
+
+def test_mail_range_nadawcza():
+    from_ = 0
+    to_ = 1
+    response = client.post(f"/api/mail_range/nadawcza/{from_}/{to_}",
+                           json={"username": USERNAME, "password": PASSWORD})
+    assert response.status_code == 200
+    assert len(response.json()) == to_ - from_ + 1
+
+
+def test_mail_range_robocza():
+    from_ = 0
+    to_ = 1
+    response = client.post(f"/api/mail_range/robocza/{from_}/{to_}",
+                           json={"username": USERNAME, "password": PASSWORD})
+    assert response.status_code == 200
+    assert len(response.json()) == to_ - from_ + 1
+
+
+def test_mail_range_usuniete():
+    from_ = 0
+    to_ = 0
+    response = client.post(f"/api/mail_range/usuniete/{from_}/{to_}",
+                           json={"username": USERNAME, "password": PASSWORD})
+    assert response.status_code == 200
+    assert len(response.json()) == to_ - from_ + 1
+
