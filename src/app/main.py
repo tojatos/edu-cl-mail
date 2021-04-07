@@ -22,15 +22,17 @@ class NumberOfMails(BaseModel):
 
 class OdbiorczaMail(BaseModel):
     id: int
-    date: str
-    title: str
-    message: str
-    priority: str
     sender: str
+    row_id: str
+    title: str
+    priority: str
+    date: str
+    message: str
 
 
 class NadawczaMail(BaseModel):
     id: int
+    row_id: str
     date: str
     title: str
     message: str
@@ -42,18 +44,18 @@ class NadawczaMail(BaseModel):
 
 class RoboczaMail(BaseModel):
     id: int
+    row_id: str
     date: str
     title: str
     message: str
     priority: str
     receiver: str
-    send_status: str
-    dist_status: str
 
 
 class UsunieteMail(BaseModel):
     id: int
     date: str
+    row_id: str
     title: str
     message: str
     priority: str
@@ -82,9 +84,8 @@ def num_mails(c: Credentials, name: str):
     return {"numberOfMails": mails_num}
 
 
-@app.post("/api/mail_range/odbiorcza/{from_}/{to_}")
-# @app.post("/api/mail_range/odbiorcza/{from_}/{to_}", response_model=List[OdbiorczaMail])
-def num_mails(c: Credentials, from_: int, to_: int):
+@app.post("/api/mail_range/odbiorcza/{from_}/{to_}", response_model=List[OdbiorczaMail])
+def mail_range_odbiorcza(c: Credentials, from_: int, to_: int):
     """ returns mails with ids from range {from_} - {to_} in the inbox 'odbiorcza'"""
     try:
         mails = get_mail_range(c.username, c.password, from_, to_, "odbiorcza")
@@ -93,8 +94,8 @@ def num_mails(c: Credentials, from_: int, to_: int):
     return mails
 
 
-@app.post("/api/mail_range/nadawcza/{from_}/{to_}")
-def num_mails(c: Credentials, from_: int, to_: int):
+@app.post("/api/mail_range/nadawcza/{from_}/{to_}", response_model=List[NadawczaMail])
+def mail_range_nadawcza(c: Credentials, from_: int, to_: int):
     """ returns mails with ids from range {from_} - {to_} in the inbox 'nadawcza'"""
     try:
         mails = get_mail_range(c.username, c.password, from_, to_, "nadawcza")
@@ -103,8 +104,8 @@ def num_mails(c: Credentials, from_: int, to_: int):
     return mails
 
 
-@app.post("/api/mail_range/robocza/{from_}/{to_}")
-def num_mails(c: Credentials, from_: int, to_: int):
+@app.post("/api/mail_range/robocza/{from_}/{to_}", response_model=List[RoboczaMail])
+def mail_range_robocza(c: Credentials, from_: int, to_: int):
     """ returns mails with ids from range {from_} - {to_} in the inbox 'robocza'"""
     try:
         mails = get_mail_range(c.username, c.password, from_, to_, "robocza")
@@ -113,8 +114,8 @@ def num_mails(c: Credentials, from_: int, to_: int):
     return mails
 
 
-@app.post("/api/mail_range/usuniete/{from_}/{to_}")
-def num_mails(c: Credentials, from_: int, to_: int):
+@app.post("/api/mail_range/usuniete/{from_}/{to_}", response_model=List[UsunieteMail])
+def mail_range_usuniete(c: Credentials, from_: int, to_: int):
     """ returns mails with ids from range {from_} - {to_} in the inbox 'usuniete'"""
     try:
         mails = get_mail_range(c.username, c.password, from_, to_, "usuniete")

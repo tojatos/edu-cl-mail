@@ -219,11 +219,13 @@ def get_mail_range(login, password, from_, to_, inbox="odbiorcza"):
     with ThreadPoolExecutor(max_workers=50) as pool:
         fetched_mails = pool.map(get_five_mails, all_paging_range_starts, repeat(edu_cl_auth))
 
-        result_mails = flatten(fetched_mails)[:number_of_mails_to_fetch]
+        result_mails = list(reversed(flatten(fetched_mails)[:number_of_mails_to_fetch]))
 
         fetched_messages = pool.map(get_mail_content, [x["row_id"] for x in result_mails], repeat(edu_cl_auth))
+        # fetched_messages_reversed = reversed(list(fetched_messages))
 
-        for mail, message in zip(result_mails, fetched_messages):
+        for index, (mail, message) in enumerate(zip(result_mails, fetched_messages)):
+            mail["id"] = from_ + index
             mail["message"] = message
 
         return result_mails
