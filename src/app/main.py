@@ -2,6 +2,8 @@ import datetime
 from typing import List
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
 from pydantic import BaseModel
 
 from .edu_cl_mail import check_login, get_mails_num, get_mail_range
@@ -64,6 +66,20 @@ class UsunieteMail(BaseModel):
 
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "https://localhost",
+    "https://krzysztofruczkowski.pl:2020",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/api/login_check", response_model=LoginCheckResult)
