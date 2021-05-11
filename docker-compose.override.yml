@@ -1,9 +1,0 @@
-version: "3.9"
-services:
-  edu-cl-api:
-    ports:
-      - "2020:80"
-
-networks:
-  traefik-public:
-    external: false

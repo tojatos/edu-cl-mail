@@ -69,8 +69,10 @@ app = FastAPI()
 
 origins = [
     "http://localhost",
+    "http://localhost:3000",
     "https://localhost",
     "https://krzysztofruczkowski.pl:2020",
+    "https://krzysztofruczkowski.pl",
 ]
 
 app.add_middleware(

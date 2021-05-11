@@ -2,16 +2,9 @@ version: "3.9"
 services:
   edu-cl-api:
     image: tojatos/edu-cl-api
+    restart: always
     build: src
-    labels:
-      - traefik.enable=true
-      - traefik.http.services.app.loadbalancer.server.port=80
-      - traefik.http.routers.app.http.entrypoints=http
-        #- traefik.http.routers.app.http.rule=Host(``)
-      - traefik.docker.network=traefik-public
-    networks:
-      - traefik-public
-
-networks:
-  traefik-public:
-    external: true
+    ports:
+      - "2020:80"
+    environment:
+      - GUNICORN_CMD_ARGS='--root-path /edu-cl-api/api'
