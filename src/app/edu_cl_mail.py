@@ -194,19 +194,21 @@ def get_mails_num(login, password, inbox) -> int:
 
 
 def get_mail_range(login, password, from_, to_, inbox="odbiorcza"):
-    if from_ < 0:
-        raise
 
     edu_cl_auth = get_edu_cl_auth(login, password)
-    print()
 
-    # first_index = from_
-    # last_index = from_ + to_
-    number_of_mails_to_fetch = to_ - from_ + 1
-    number_of_additional_pages_to_fetch = (number_of_mails_to_fetch - 1) // 5
     inbox_init_res = init_inbox(inbox, edu_cl_auth)
     last_page_num = get_last_page_num(inbox_init_res)
     mails_num = get_mails_num_auth(edu_cl_auth, last_page_num)
+
+    to_ = min(to_, mails_num)
+    from_ = max(from_, 0)
+
+    number_of_mails_to_fetch = to_ - from_ + 1
+    if number_of_mails_to_fetch <= 0:
+        return []
+
+    number_of_additional_pages_to_fetch = (number_of_mails_to_fetch - 1) // 5
 
     paging_range_start = mails_num - to_ - 1
     paging_range_end = paging_range_start + number_of_additional_pages_to_fetch * 5
@@ -222,7 +224,6 @@ def get_mail_range(login, password, from_, to_, inbox="odbiorcza"):
         result_mails = list(reversed(flatten(fetched_mails)[:number_of_mails_to_fetch]))
 
         fetched_messages = pool.map(get_mail_content, [x["row_id"] for x in result_mails], repeat(edu_cl_auth))
-        # fetched_messages_reversed = reversed(list(fetched_messages))
 
         for index, (mail, message) in enumerate(zip(result_mails, fetched_messages)):
             mail["id"] = from_ + index

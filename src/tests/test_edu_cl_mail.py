@@ -23,11 +23,6 @@ def test_get_edu_cl_auth():
     assert type(result) is EduClAuth
 
 
-# def test_get_pages_num():
-#     result = get_pages_num(USERNAME, PASSWORD, "odbiorcza")
-#     assert result > 1
-
-
 def test_get_mail_num():
     result = get_mails_num(USERNAME, PASSWORD, "odbiorcza")
     assert result > 1
@@ -59,3 +54,32 @@ def test_get_mail_range_usuniete():
     to_ = 0
     result = get_mail_range(USERNAME, PASSWORD, from_, to_, "usuniete")
     assert len(result) == to_ - from_ + 1
+
+
+def test_get_mail_range_usuniete_too_much():
+    from_ = 0
+    to_ = 15
+    num_mails = get_mails_num(USERNAME, PASSWORD, "usuniete")
+    result = get_mail_range(USERNAME, PASSWORD, from_, to_, "usuniete")
+    assert len(result) == num_mails
+
+
+def test_get_mail_range_odbiorcza_negative():
+    from_ = 0
+    to_ = -15
+    result = get_mail_range(USERNAME, PASSWORD, from_, to_, "odbiorcza")
+    assert len(result) == 0
+
+
+def test_get_mail_range_usuniete_weird_range():
+    from_ = 500
+    to_ = 503
+    result = get_mail_range(USERNAME, PASSWORD, from_, to_, "usuniete")
+    assert len(result) == 0
+
+
+def test_get_mail_range_usuniete_negative_positive_range():
+    from_ = -5
+    to_ = 4
+    result = get_mail_range(USERNAME, PASSWORD, from_, to_, "odbiorcza")
+    assert len(result) == 5
