@@ -78,8 +78,17 @@ def test_get_mail_range_usuniete_weird_range():
     assert len(result) == 0
 
 
-def test_get_mail_range_usuniete_negative_positive_range():
+def test_get_mail_range_odbiorcza_negative_positive_range():
     from_ = -5
     to_ = 4
     result = get_mail_range(USERNAME, PASSWORD, from_, to_, "odbiorcza")
     assert len(result) == 5
+
+
+def test_get_mail_range_odbiorcza_no_duplicates():
+    from_ = 470
+    to_ = 479
+    result = get_mail_range(USERNAME, PASSWORD, from_, to_, "odbiorcza")
+    id_map = list(map(lambda m: m["row_id"], result))
+    print(result)
+    assert len(id_map) == len(set(id_map))
