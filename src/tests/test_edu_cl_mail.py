@@ -92,3 +92,25 @@ def test_get_mail_range_odbiorcza_no_duplicates():
     id_map = list(map(lambda m: m["row_id"], result))
     print(result)
     assert len(id_map) == len(set(id_map))
+
+
+# def test_gather_data():
+#     test_from_to = [
+#         (0, 0),
+#         (1, 1),
+#         # (470, 470),
+#         # (471, 471),
+#         # (472, 472),
+#         # (473, 473),
+#         # (474, 474),
+#         (475, 475),
+#         (476, 476),
+#         # (477, 477),
+#         # (478, 478),
+#     ]
+#     for t in test_from_to:
+#         print()
+#         print("test case: " + str(t))
+#         result = get_mail_range(USERNAME, PASSWORD, t[0], t[1], "odbiorcza")
+#         print(result[0]["id"])
+#         print(result)

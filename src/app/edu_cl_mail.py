@@ -201,8 +201,11 @@ def get_mail_range(login, password, from_, to_, inbox="odbiorcza"):
     last_page_num = get_last_page_num(inbox_init_res)
     mails_num = get_mails_num_auth(edu_cl_auth, last_page_num)
 
-    to_ = min(to_, mails_num)
     from_ = max(from_, 0)
+    to_ = min(to_, mails_num - 1)
+
+    if from_ > to_:
+        return []
 
     number_of_mails_to_fetch = to_ - from_ + 1
     if number_of_mails_to_fetch <= 0:
@@ -211,13 +214,13 @@ def get_mail_range(login, password, from_, to_, inbox="odbiorcza"):
     number_of_additional_pages_to_fetch = (number_of_mails_to_fetch - 1) // 5
 
     paging_range_start = mails_num - to_ - 1
-    paging_range_start = max(paging_range_start, 0)
+    # paging_range_start = max(paging_range_start, 0)
     paging_range_end = paging_range_start + number_of_additional_pages_to_fetch * 5
-    print()
+    print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
     print(mails_num)
     print(from_)
     print(to_)
-    print()
+    print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
     print(paging_range_start)
     print(paging_range_end)
 
