@@ -1,9 +1,7 @@
-import datetime
 from typing import List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
 from pydantic import BaseModel
 
 from .edu_cl_mail import check_login, get_mails_num, get_mail_range

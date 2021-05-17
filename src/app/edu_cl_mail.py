@@ -214,18 +214,8 @@ def get_mail_range(login, password, from_, to_, inbox="odbiorcza"):
     number_of_additional_pages_to_fetch = (number_of_mails_to_fetch - 1) // 5
 
     paging_range_start = mails_num - to_ - 1
-    # paging_range_start = max(paging_range_start, 0)
     paging_range_end = paging_range_start + number_of_additional_pages_to_fetch * 5
-    print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
-    print(mails_num)
-    print(from_)
-    print(to_)
-    print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
-    print(paging_range_start)
-    print(paging_range_end)
-
     all_paging_range_starts = range(paging_range_start, paging_range_end + 1, 5)
-    print(list(all_paging_range_starts))
 
     def flatten(t):
         return [item for sublist in t for item in sublist]

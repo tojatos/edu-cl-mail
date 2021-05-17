@@ -68,15 +68,6 @@ def test_mail_range_odbiorcza():
     assert len(response.json()) == to_ - from_ + 1
 
 
-# def test_mail_range_odbiorcza_many_mails():
-#     from_ = 0
-#     to_ = 470
-#     response = client.post(f"/api/mail_range/odbiorcza/{from_}/{to_}",
-#                            json={"username": USERNAME, "password": PASSWORD})
-#     assert response.status_code == 200
-#     assert len(response.json()) == 471
-
-
 def test_mail_range_nadawcza():
     from_ = 0
     to_ = 1
