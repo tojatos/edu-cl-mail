@@ -1,10 +1,16 @@
 # About the API
 [Motivation](#Motivation)
+
 [Used libraries](#Used-libraries)
+
 [Used method of retrieving mails](#Used-method-of-retrieving-mails)
+
 [Inbox names](#Inbox-names)
+
 [Mail ids](#Mail-ids)
+
 [Restrictions](#Restrictions)
+
 [Links](#Links)
 ## Motivation
 You can use this API to create a better mailbox than the one on edukacja.cl or JSOS.
