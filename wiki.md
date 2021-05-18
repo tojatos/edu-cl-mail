@@ -1,4 +1,23 @@
 # About the API
+[Motivation](#Motivation)
+[Used libraries](#Used-libraries)
+[Used method of retrieving mails](#Used-method-of-retrieving-mails)
+[Inbox names](#Inbox-names)
+[Mail ids](#Mail-ids)
+[Restrictions](#Restrictions)
+[Links](#Links)
+## Motivation
+You can use this API to create a better mailbox than the one on edukacja.cl or JSOS.
+It can be really hard to search for information inside those mailboxes, as they offer no filtering / searching functionalities.
+## Used libraries
+FastAPI was used as a web framework for this project, as it is fast and fully compatible with OpenAPI.
+BeautifulSoup4 was used as a web page parser.
+
+## Used method of retrieving mails
+Parallel requests are used to retrieve mail data and mails, which are then parsed into objects and returned by API.
+Unfortunately, you have to make one request to read a single mail and a single request to get metadata about 5 mails, so keep in mind that there are some [restrictions](#Restrictions).
+
+
 ## Inbox names
 There are four available inbox names:
 
@@ -10,7 +29,7 @@ inboxes = [
     'usuniete',
 ]
 ```
-## Mail id's
+## Mail ids
 Mails are indexed from 0 to ${inbox_mail_num} - 1.
 You can retrieve the ${inbox_mail_num} from the `/api/num_mails/${name}` route, where ${name} is the inbox name.
 First mail in the inbox will have and id of 0.
