@@ -1,11 +1,17 @@
 # Parser Edukacja.cl
-[1. Opis](home#1-opis)
-[2. Zródła](home#2-%C5%B9r%C3%B3d%C5%82a)
-[3. Przykładowe dane](home#3-przyk%C5%82adowe-dane)
-[4. Opis wywołania](home#4-opis-wywo%C5%82ania)
-[5. Opis wersji](home#5-opis-wersji)
-[6. Uruchomienie kontenera z usługą](home#6-uruchomienie-kontenera-z-us%C5%82ug%C4%85)
-[7. Linki](home#7-linki)
+[1. Opis](#1-opis)
+
+[2. Zródła](#2-%C5%B9r%C3%B3d%C5%82a)
+
+[3. Przykładowe dane](#3-przyk%C5%82adowe-dane)
+
+[4. Opis wywołania](#4-opis-wywo%C5%82ania)
+
+[5. Opis wersji](#5-opis-wersji)
+
+[6. Uruchomienie kontenera z usługą](#6-uruchomienie-kontenera-z-us%C5%82ug%C4%85)
+
+[7. Linki](#7-linki)
 
 ## 1. Opis
 Skrzynka z elektronicznymi wiadomościami na portalach https://edukacja.pwr.edu.pl oraz https://jsos.pwr.edu.pl nie pozwala na filtrowanie / szukanie wiadomości.
@@ -13,7 +19,7 @@ Skrzynka z elektronicznymi wiadomościami na portalach https://edukacja.pwr.edu.
 Można wykorzystać ten parser w celu stworzenia lepszej skrzynki.
 
 ## 2. Zródła
-[FastAPI](https://fastapi.tiangolo.com/) zostało użyty jako web framework dla tego projektu, ponieważ jest szybki i w pełni kompatybilny z OpenAPI.
+[FastAPI](https://fastapi.tiangolo.com/) został użyty jako web framework dla tego projektu, ponieważ jest szybki i w pełni kompatybilny z OpenAPI.
 
 [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/) został użyty jako parser stron internetowych.
 
