@@ -1,6 +1,6 @@
 # Usługa pobierająca maile z Edukacja.cl
 ## Opis
-Projekt ten zawiera parser strony edukacja.pwr.edu.pl.
+Projekt ten zawiera parser strony <https://edukacja.pwr.wroc.pl>.
 Został on zaimplementowany w języku Python.
 
 Projekt ten zawiera również implementację usługi webowej, która poprzez interfejs REST oferuje możliwość uruchomienia parsera dla danych użytkownika przesłanych w formacie JSON.

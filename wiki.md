@@ -14,7 +14,7 @@
 [7. Linki](#7-linki)
 
 ## 1. Opis
-Skrzynka z elektronicznymi wiadomościami na portalach https://edukacja.pwr.edu.pl oraz https://jsos.pwr.edu.pl nie pozwala na filtrowanie / szukanie wiadomości.
+Skrzynka z elektronicznymi wiadomościami na portalach https://edukacja.pwr.wroc.pl oraz https://jsos.pwr.edu.pl nie pozwala na filtrowanie / szukanie wiadomości.
 
 Można wykorzystać ten parser w celu stworzenia lepszej skrzynki.
 
@@ -62,7 +62,6 @@ Pierwszy mail w danej skrzynce będzie miał id 0.
 /api/login_check - pozwala na sprawdzenie loginu i hasła
 /api/num_mails/{name} - zwraca liczbę maili dla skrzynki {name}
 /api/mail_range/{name}/{from_}/{to_} - zwraca maile dla skrzynki {name} od indeksu {from_} do indeksu {to_}
-
 ```
 
 ### Ograniczenia
