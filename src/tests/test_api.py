@@ -60,6 +60,7 @@ def test_number_of_mails_incorrect_inboxes():
 
 
 def test_mail_range_odbiorcza():
+    """assumes you have at least 4 mails in this inbox"""
     from_ = 0
     to_ = 3
     response = client.post(f"/api/mail_range/odbiorcza/{from_}/{to_}",
@@ -69,6 +70,7 @@ def test_mail_range_odbiorcza():
 
 
 def test_mail_range_nadawcza():
+    """assumes you have at least 2 mails in this inbox"""
     from_ = 0
     to_ = 1
     response = client.post(f"/api/mail_range/nadawcza/{from_}/{to_}",
@@ -78,6 +80,7 @@ def test_mail_range_nadawcza():
 
 
 def test_mail_range_robocza():
+    """assumes you have at least 2 mails in this inbox"""
     from_ = 0
     to_ = 1
     response = client.post(f"/api/mail_range/robocza/{from_}/{to_}",
@@ -87,6 +90,7 @@ def test_mail_range_robocza():
 
 
 def test_mail_range_usuniete():
+    """assumes you have at least 1 mail in this inbox"""
     from_ = 0
     to_ = 0
     response = client.post(f"/api/mail_range/usuniete/{from_}/{to_}",

@@ -24,11 +24,13 @@ def test_get_edu_cl_auth():
 
 
 def test_get_mail_num():
+    """assumes you have at least 1 mail in this inbox"""
     result = get_mails_num(USERNAME, PASSWORD, "odbiorcza")
     assert result > 1
 
 
 def test_get_mail_range_odbiorcza():
+    """assumes you have at least 13 mails in this inbox"""
     from_ = 1
     to_ = 12
     result = get_mail_range(USERNAME, PASSWORD, from_, to_, "odbiorcza")
@@ -36,6 +38,7 @@ def test_get_mail_range_odbiorcza():
 
 
 def test_get_mail_range_nadawcza():
+    """assumes you have at least 3 mails in this inbox"""
     from_ = 0
     to_ = 2
     result = get_mail_range(USERNAME, PASSWORD, from_, to_, "nadawcza")
@@ -43,6 +46,7 @@ def test_get_mail_range_nadawcza():
 
 
 def test_get_mail_range_robocza():
+    """assumes you have at least 3 mails in this inbox"""
     from_ = 0
     to_ = 2
     result = get_mail_range(USERNAME, PASSWORD, from_, to_, "robocza")
@@ -50,6 +54,7 @@ def test_get_mail_range_robocza():
 
 
 def test_get_mail_range_usuniete():
+    """assumes you have at least 1 mail in this inbox"""
     from_ = 0
     to_ = 0
     result = get_mail_range(USERNAME, PASSWORD, from_, to_, "usuniete")
@@ -57,6 +62,7 @@ def test_get_mail_range_usuniete():
 
 
 def test_get_mail_range_usuniete_too_much():
+    """should return as many mails as you have (up to 15)"""
     from_ = 0
     to_ = 15
     num_mails = get_mails_num(USERNAME, PASSWORD, "usuniete")
@@ -72,6 +78,7 @@ def test_get_mail_range_odbiorcza_negative():
 
 
 def test_get_mail_range_usuniete_weird_range():
+    """assumes you don't have 500 mails in this inbox"""
     from_ = 500
     to_ = 503
     result = get_mail_range(USERNAME, PASSWORD, from_, to_, "usuniete")
@@ -79,6 +86,7 @@ def test_get_mail_range_usuniete_weird_range():
 
 
 def test_get_mail_range_odbiorcza_negative_positive_range():
+    """assumes you have at least 5 mails in this inbox"""
     from_ = -5
     to_ = 4
     result = get_mail_range(USERNAME, PASSWORD, from_, to_, "odbiorcza")

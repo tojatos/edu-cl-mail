@@ -31,7 +31,8 @@ inbox_ids = {
 }
 
 
-def get_mail_content(row_id, edu_cl_auth: EduClAuth):
+def get_mail_content(row_id: str, edu_cl_auth: EduClAuth):
+    """returns mail content for given row_id"""
     mail_content_params = {
         'clEduWebSESSIONTOKEN': edu_cl_auth.web_session_token,
         'event': 'positionRow',
@@ -48,6 +49,8 @@ def get_mail_content(row_id, edu_cl_auth: EduClAuth):
 
 
 def get_messages_data_list(tds, headers):
+    """returns messages metadata from unparsed HTML"""
+
     header_to_json_key_map = {
         '': '',
         '!': '',
@@ -76,7 +79,6 @@ def get_messages_data_list(tds, headers):
         if json_key == 'title':
             row_id = re.findall(r'rowId=(.*)&', td.find('a').attrs['href'])[0]
             temp_data['row_id'] = row_id
-            # get_mail_content(row_id, edu_cl_auth)
 
         i += 1
         if i % len(headers) == 0:
@@ -87,7 +89,7 @@ def get_messages_data_list(tds, headers):
     return messages_datas
 
 
-def get_five_mails(paging_range_start, edu_cl_auth: EduClAuth):
+def get_five_mails(paging_range_start: int, edu_cl_auth: EduClAuth):
     """get five mails from paging_range_start (or potentially less if this is at the end of paging) """
     inbox_data = {
         'cl.edu.web.TOKEN': edu_cl_auth.web_token,
@@ -111,7 +113,7 @@ def get_five_mails(paging_range_start, edu_cl_auth: EduClAuth):
     return messages_data_list
 
 
-def get_inbox_real_id(inbox, edu_cl_auth: EduClAuth):
+def get_inbox_real_id(inbox: str, edu_cl_auth: EduClAuth):
     """ returns real id of inbox """
     inbox_id = inbox_ids[inbox]
 
@@ -124,12 +126,11 @@ def get_inbox_real_id(inbox, edu_cl_auth: EduClAuth):
     inbox_res = edu_cl_auth.session.get(inbox_url, params=inbox_params)
     options = BeautifulSoup(inbox_res.content, 'html.parser').find('select', id='wyborSkrzynek').findChildren('option')
     inbox_real_id = options[inbox_id].attrs['value']
-    # print(inbox_real_id)
     return inbox_real_id
 
 
 def init_inbox(inbox, edu_cl_auth: EduClAuth):
-    """ init inbox, following post requests will not work otherwise """
+    """init inbox, following post requests will not work otherwise"""
     inbox_real_id = get_inbox_real_id(inbox, edu_cl_auth)
 
     inbox_init_params = {
@@ -146,6 +147,7 @@ def init_inbox(inbox, edu_cl_auth: EduClAuth):
 
 
 def get_last_page_num(inbox_init_res):
+    """returns last page number from initialized inbox"""
     paging_numerics = BeautifulSoup(inbox_init_res.content, 'html.parser').find_all('input',
                                                                                     class_='paging-numeric-btn')
     if not paging_numerics:  # only one page
@@ -153,7 +155,8 @@ def get_last_page_num(inbox_init_res):
     return int(paging_numerics[-1].get('value'))
 
 
-def get_edu_cl_auth(login, password):
+def get_edu_cl_auth(login: str, password: str):
+    """returns EduClAuth object if user can login, otherwise returns EduClAuthFail"""
     s = requests.Session()
 
     req = s.get(base_url)
@@ -177,24 +180,26 @@ def get_edu_cl_auth(login, password):
     return EduClAuthFail()
 
 
-def check_login(login, password):
+def check_login(login: str, password: str):
+    """returns true if credentials can be used to login, false otherwise"""
     edu_cl_auth = get_edu_cl_auth(login, password)
     return type(edu_cl_auth) is not EduClAuthFail
 
 
 def get_mails_num_auth(edu_cl_auth: EduClAuth, last_page_num: int) -> int:
-    """requires initialized inbox"""
+    """returns number of mails from initialized inbox"""
     return len(get_five_mails(last_page_num * 5 - 5, edu_cl_auth)) + (last_page_num - 1) * 5
 
 
-def get_mails_num(login, password, inbox) -> int:
+def get_mails_num(login: str, password: str, inbox: str) -> int:
+    """returns number of mails from inbox"""
     edu_cl_auth = get_edu_cl_auth(login, password)
     inbox_init_res = init_inbox(inbox, edu_cl_auth)
     return get_mails_num_auth(edu_cl_auth, get_last_page_num(inbox_init_res))
 
 
-def get_mail_range(login, password, from_, to_, inbox="odbiorcza"):
-
+def get_mail_range(login: str, password: str, from_: int, to_: int, inbox: str = "odbiorcza"):
+    """returns mails from range <from_> - <to_> in inbox <inbox>"""
     edu_cl_auth = get_edu_cl_auth(login, password)
 
     inbox_init_res = init_inbox(inbox, edu_cl_auth)
