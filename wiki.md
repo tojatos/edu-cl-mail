@@ -1,32 +1,43 @@
-# About the API
-[Motivation](#Motivation)
+# Parser Edukacja.cl
+[1. Opis](home#1-opis)
+[2. Zródła](home#2-%C5%B9r%C3%B3d%C5%82a)
+[3. Przykładowe dane](home#3-przyk%C5%82adowe-dane)
+[4. Opis wywołania](home#4-opis-wywo%C5%82ania)
+[5. Opis wersji](home#5-opis-wersji)
+[6. Uruchomienie kontenera z usługą](home#6-uruchomienie-kontenera-z-us%C5%82ug%C4%85)
+[7. Linki](home#7-linki)
 
-[Used libraries](#Used-libraries)
+## 1. Opis
+Skrzynka z elektronicznymi wiadomościami na portalach https://edukacja.pwr.edu.pl oraz https://jsos.pwr.edu.pl nie pozwala na filtrowanie / szukanie wiadomości.
 
-[Used method of retrieving mails](#Used-method-of-retrieving-mails)
+Można wykorzystać ten parser w celu stworzenia lepszej skrzynki.
 
-[Inbox names](#Inbox-names)
+## 2. Zródła
+[FastAPI](https://fastapi.tiangolo.com/) zostało użyty jako web framework dla tego projektu, ponieważ jest szybki i w pełni kompatybilny z OpenAPI.
 
-[Mail ids](#Mail-ids)
+[BeautifulSoup4](https://pypi.org/project/beautifulsoup4/) został użyty jako parser stron internetowych.
 
-[Restrictions](#Restrictions)
+## 3. Przykładowe dane
+Do skorzystania z API potrzebny jest login i hasło do Edukacja.cl:
 
-[Links](#Links)
-## Motivation
-You can use this API to create a better mailbox than the one on edukacja.cl or JSOS.
-It can be really hard to search for information inside those mailboxes, as they offer no filtering / searching functionalities.
-## Used libraries
-FastAPI was used as a web framework for this project, as it is fast and fully compatible with OpenAPI.
-BeautifulSoup4 was used as a web page parser.
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
 
-## Used method of retrieving mails
-Parallel requests are used to retrieve mail data and mails, which are then parsed into objects and returned by API.
-Unfortunately, you have to make one request to read a single mail and a single request to get metadata about 5 mails, so keep in mind that there are some [restrictions](#Restrictions).
+```
+username - login do Edukacja.cl
+password - hasło do Edukacja.cl
+```
 
+## 4. Opis wywołania
+Po uruchomieniu tego API, można przejść do http://localhost/docs (lub do ${HOST}/docs, w przypadku użycia innego hosta).
 
-## Inbox names
-There are four available inbox names:
+Znajdzie się tam specyfikacja API w standardzie OpenAPI.
 
+### Dostępne skrzynki
 ```python
 inboxes = [
     'odbiorcza',
@@ -35,21 +46,48 @@ inboxes = [
     'usuniete',
 ]
 ```
-## Mail ids
-Mails are indexed from 0 to ${inbox_mail_num} - 1.
-You can retrieve the ${inbox_mail_num} from the `/api/num_mails/${name}` route, where ${name} is the inbox name.
-First mail in the inbox will have and id of 0.
-## Restrictions
-Be careful about how many mails at once you want to retrieve.
-You should not try to download more than 200 mails at once, as Edukacja.cl may block some of the requests, and the result will be an internal error (code 500).
-It is better to split the request in chunks, for example keep requesting in chunks of 10 mails, but start a new request after the last one.
-## Links
-API used on my website: https://krzysztofruczkowski.pl/edu-cl-api/
 
-Docs of API used on my website (sending requests will not work there though, as it is behind a reversed proxy): https://krzysztofruczkowski.pl/edu-cl-api/docs
+### Indeksowanie maili
+Maile są indeksowane od 0.
+Pierwszy mail w danej skrzynce będzie miał id 0.
 
-UI that uses this API: https://krzysztofruczkowski.pl/edu-cl-mail/
+### Krótki opis API
+```
+/api/login_check - pozwala na sprawdzenie loginu i hasła
+/api/num_mails/{name} - zwraca liczbę maili dla skrzynki {name}
+/api/mail_range/{name}/{from_}/{to_} - zwraca maile dla skrzynki {name} od indeksu {from_} do indeksu {to_}
 
-API github repository: https://github.com/tojatos/edu-cl-mail
+```
 
-UI github repository: https://github.com/tojatos/edu-cl-mail-front/tree/fastapi
+### Ograniczenia
+Trzeba uważać na liczbę wiadomości do pobrania za jednym razem.
+Nie należy próbować pobierać więcej niż 200 maili naraz, ponieważ system Edukacja.cl może zablokować część żądań, czego wynikiem będzie błąd wewnętrzny (kod 500).
+Lepiej jest podzielić żądanie na części, na przykład pobierając w częściach po 10 maili, każde następne żądanie rozpoczynając po ostatnim.
+
+## 5. Opis wersji
+Nie dotyczy.
+
+## 6. Uruchomienie kontenera z usługą
+### Używając docker-compose'a
+Wystarczy zmodyfikować i uruchomić docker-compose.yml:
+```shell
+docker-compose up
+```
+### Używając dockera
+Po przejściu do folderu `src`, należy zbudować i otagować obraz, a następnie go uruchomić, na pszykład:
+```shell
+docker build -t edu_cl_fastapi .
+docker run -p 80:80 edu_cl_fastapi:latest
+```
+
+## 7. Linki
+
+Repozytorium API na githubie: https://github.com/tojatos/edu-cl-mail
+
+Wystawione API: https://krzysztofruczkowski.pl/edu-cl-api/
+
+Specyfikacja wystawionego API (wysyłanie żądań z tej specyfikacji nie zadziała, gdyż jest wystawiona za odwróconym proxy): https://krzysztofruczkowski.pl/edu-cl-api/docs
+
+Przykładowe UI wykorzystujące API: https://krzysztofruczkowski.pl/edu-cl-mail/
+
+Repozytorium UI na githubie: https://github.com/tojatos/edu-cl-mail-front/tree/fastapi
