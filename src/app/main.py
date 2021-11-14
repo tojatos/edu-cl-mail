@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 from fastapi import FastAPI, HTTPException
@@ -6,6 +7,14 @@ from pydantic import BaseModel
 
 from .edu_cl_mail import check_login, get_mails_num, get_mail_range
 
+def get_env(key, fallback):
+    try:
+        return os.environ[key]
+    except KeyError:
+        return fallback
+
+
+ROOT_PATH = get_env('ROOT_PATH', "/")
 
 class Credentials(BaseModel):
     username: str
@@ -63,7 +72,7 @@ class UsunieteMail(BaseModel):
     sender: str
 
 
-app = FastAPI()
+app = FastAPI(root_path=ROOT_PATH)
 
 origins = [
     "http://localhost",

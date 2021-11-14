@@ -4,7 +4,23 @@ services:
     image: tojatos/edu-cl-api
     restart: always
     build: src
-    ports:
-      - "2020:80"
+    networks:
+      - web
+      - default
     environment:
-      - GUNICORN_CMD_ARGS='--root-path /edu-cl-api/api'
+      - ROOT_PATH=/edu-cl-api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.edu-cl-api-stripprefix.stripPrefix.prefixes=/edu-cl-api"
+      - "traefik.http.routers.edu-cl-api.rule=(Host(`krzysztofruczkowski.pl`) && PathPrefix(`/edu-cl-api/`))"
+      - "traefik.http.routers.edu-cl-api.middlewares=edu-cl-api-stripprefix"
+      - "traefik.http.routers.edu-cl-api.entrypoints=websecure"
+      - "traefik.http.routers.edu-cl-api.tls=true"
+      - "traefik.http.routers.edu-cl-api.tls.certresolver=myresolver"
+      - "traefik.http.services.edu-cl-api.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik_default"
+
+networks:
+  web:
+    name: traefik_default
+    external: true
