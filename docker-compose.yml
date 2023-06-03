@@ -12,7 +12,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.edu-cl-api-stripprefix.stripPrefix.prefixes=/edu-cl-api"
-      - "traefik.http.routers.edu-cl-api.rule=(Host(`krzysztofruczkowski.pl`) && PathPrefix(`/edu-cl-api/`))"
+      - "traefik.http.routers.edu-cl-api.rule=((Host(`krzysztofruczkowski.pl`) || Host(`www.krzysztofruczkowski.pl`)) && PathPrefix(`/edu-cl-api/`))"
       - "traefik.http.routers.edu-cl-api.middlewares=edu-cl-api-stripprefix"
       - "traefik.http.routers.edu-cl-api.entrypoints=websecure"
       - "traefik.http.routers.edu-cl-api.tls=true"
